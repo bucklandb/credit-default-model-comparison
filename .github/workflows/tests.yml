@@ -1,0 +1,29 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python credit_default.py --help
+      - name: Check notebook syntax
+        run: |
+          python - <<'PYCODE'
+          import ast
+          import json
+          from pathlib import Path
+          notebook = json.loads(Path('notebooks/credit_default_comparison.ipynb').read_text())
+          for cell in notebook['cells']:
+              if cell['cell_type'] == 'code':
+                  ast.parse(''.join(cell['source']))
+                  assert cell.get('outputs') == []
+                  assert cell.get('execution_count') is None
+          PYCODE

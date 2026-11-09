@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+.ipynb_checkpoints/
+.env
+*.xls
+*.zip
+*.keras
+results.json
+tuned-results.json
